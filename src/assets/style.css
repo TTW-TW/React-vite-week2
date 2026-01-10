@@ -1,0 +1,112 @@
+/* 全域設定 */
+html,
+body {
+  height: 100%;
+  text-align: center;
+  background-color: rgb(52, 50, 50);
+}
+
+.double-text{
+  font-size: 36px;
+  -webkit-text-stroke: 2px rgb(255, 247, 0); /* 描邊色和寬度 */
+  text-stroke: 2px rgb(210, 214, 66);
+  paint-order: stroke fill; /* 先畫外框，再填滿 */
+}
+
+
+
+/* ==== 登入頁面 ==== */
+
+.login {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+}
+
+.login-section{
+  padding: 50px;
+  background-color: rgb(3, 100, 100);
+  border-radius: 16px;
+  box-shadow: 10px 10px 10px ;
+}
+
+.form-signin {
+  width: 100%;
+  max-width: 330px;
+  padding: 15px;
+  margin: auto;
+}
+
+/* ====  產品頁面 ==== */
+
+img {
+  object-fit: contain;
+  max-width: 100%;
+}
+
+.primary-image {
+  height: 250px;
+}
+
+.images {
+  height: 200px;
+}
+
+/* === 灰色遮罩：佔滿全螢幕，半透明 === */
+
+.modal-backdrop {
+  position: fixed; /*用來定位*/
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5); /* 黑色半透明 */
+  z-index: 1000; /* 確保在最上層 */
+  /* 讓內容物置中顯示的 flex 設定 */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* === 彈跳視窗本體 === */
+.modal-content {
+  background-color: rgb(185, 186, 187);
+  padding: 20px;
+  border-radius: 8px;
+  
+  /* 限制寬度與邊距 */
+  width: 100%; 
+  max-width: calc(100% - 120px - 120px); /*  控制最大寬度 */
+  margin: 0 24px;   /* 左右保留 24px 的編劇 */
+  
+  /* 讓視窗內若內容太長可以滾動，而不影響整頁 */
+  max-height: 90vh; 
+  overflow-y: auto;
+}
+
+.card-title {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.card {
+  border: 0px;
+}
+
+.card-body{
+  display: flex;
+  flex-direction: column;
+}
+
+.card-body p {
+  justify-content: start;
+  text-align: start;
+}
+
+.card-body,
+.card {
+  background-color: rgb(185, 186, 187);
+}
