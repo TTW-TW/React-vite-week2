@@ -1,7 +1,7 @@
 import { useState  , useEffect } from 'react'; // useEffect 可以監視 State 改變的樣態
 import axios from "axios";
 import Swal from 'sweetalert2'; // 錯誤訊息吐司
-import withReactContent from 'sweetalert2-react-content';
+
 // App.jsx
 import "./assets/style.css";
 
@@ -40,9 +40,9 @@ function App() {
   const [isAuth, setIsAuth] = useState(false); // 預設未登入
 
   // 3. 取得使用者輸入值(處理多個  input 欄位，有name屬性的)
-  // # 資料流：使用者輸入 A > 偵測到 INPUT 改變，觸發 onChange 事件 > 呼叫此函數
-  // ##      >  e.target 解構並提取輸入值 > 下達更新指令 setFormData
-  // ###     > React 運算與重新渲染，走到 return 的 JSX 區域，將更新後的資料繪製到瀏覽器
+      // # 資料流：使用者輸入 A > 偵測到 INPUT 改變，觸發 onChange 事件 > 呼叫此函數
+      // ##      >  e.target 解構並提取輸入值 > 下達更新指令 setFormData
+      // ###     > React 運算與重新渲染，走到 return 的 JSX 區域，將更新後的資料繪製到瀏覽器
   const handleInputChange = (e) => {
     const {name, value} = e.target;
 
@@ -55,13 +55,13 @@ function App() {
   };
   
   // 4. 按下送出後，觸發登入 API，同時觸發取得產品 api
-  // ## 成功的話，會觸發 setIsAuth 將登入狀態改為 true
+      // ## 成功的話，會觸發 setIsAuth 將登入狀態改為 true
   const onSubmit = async (e) => {
     try {
       e.preventDefault(); // 阻止預設是建
       const response = await axios.post(loginUrl, formData)
-      console.log('登入成功')
-      console.log(response.data)
+      // console.log('登入成功')
+      // console.log(response.data)
 
       // 從 response 中解構取得 api 回傳的 token 和到期日
       const { expired, token} = response.data;
@@ -89,34 +89,23 @@ function App() {
       // 【是否為登入狀態】登入失敗要設置為 false
       setIsAuth(false)
 
-      let errorMessage = '發生未預期的錯誤';
-
-      // 檢查是否有伺服器回傳的錯誤響應
-      if (error.response) {
-      // 伺服器有回傳的話，嘗試取出 error.response.data.message
-      errorMessage = error.response.data.message || `API 錯誤 (狀態碼: ${error.response.status})`;
-      } else if (error.request) {
-      // 請求已發出但沒有收到回應 (例如：網路中斷)
-      errorMessage = '網路錯誤或伺服器無回應';
-      } else {
-      // 發生了在設定請求時觸發的錯誤
-      errorMessage = error.message;
-      }
-    
-      Toast.fire({
-              icon: "error",
-              title: '登入失敗',
-              text: errorMessage
-          });
-      throw error;
+      showErrorMsg(error, "登入失敗")
     }
   };
 
-  // 5. 執行【是否已登入】驗證
+  // 5. 執行【是否已登入】驗證 ( 搭配轉圈圈)
   const checkLogin = async (e) => {
+
+    // 使用者一點擊後，馬上啟動 setIsCheckLoading (會跳驗證中的轉圈圈)
+    setIsCheckLoading(true);
+
     try {
       const response = await axios.post(checkLoginUrl)
-      console.log(response.data)
+
+      // 停止轉圈圈
+      setIsCheckLoading(false);
+
+      // console.log(response.data)
       if (response.data.success){
         const isConfirmed = await showConfirmWindows(
                 '目前登入狀態：已登入',
@@ -131,9 +120,14 @@ function App() {
             }
       } 
     } catch (error) {
-      console.log(error)
-    }
+      showErrorMsg(error, "驗證失敗")
+      // 停止轉圈圈
+      setIsCheckLoading(false);
+    } 
   };
+
+  // 5-1.紀錄【是否已登入】按鈕的讀取中狀態，初始預設為否(沒在驗證中)
+  const [isCheckLoading, setIsCheckLoading] = useState(false)
 
   // 6. 產品資料狀態
   const [products, setProducts] = useState([]); // 產品列表返還是陣列，會去接 getProducts 的產物
@@ -156,30 +150,11 @@ function App() {
       setProducts(sortedProduct)
 
     } catch (error) {
-      let errorMessage = '發生未預期的錯誤';
-
-      // 檢查是否有伺服器回傳的錯誤響應
-      if (error.response) {
-      // 伺服器有回傳的話，嘗試取出 error.response.data.message
-      errorMessage = error.response.data.message || `API 錯誤 (狀態碼: ${error.response.status})`;
-      } else if (error.request) {
-      // 請求已發出但沒有收到回應 (例如：網路中斷)
-      errorMessage = '網路錯誤或伺服器無回應';
-      } else {
-      // 發生了在設定請求時觸發的錯誤
-      errorMessage = error.message;
-      }
-    
-      Toast.fire({
-              icon: "error",
-              title: '登入失敗',
-              text: errorMessage
-          });
-      throw error;
+      showErrorMsg(error, "取得產品失敗")
     }
   };
 
-  // 8-1 排序產品資料
+  // 8-1 排序產品資料(依照類別)
   const sortProduct = (products) => {
     const categoryOrder = ['肉類', '蔬菜類', '水果類'];
 
@@ -206,8 +181,32 @@ function App() {
     setTempProduct(null)
   }
 
+  // 97.捕捉錯誤訊息統一邏輯
+  const showErrorMsg = (error , titleMsg) => {
+      let errorMessage = '發生未預期的錯誤';
+
+      // 檢查是否有伺服器回傳的錯誤響應
+      if (error.response) {
+      // 伺服器有回傳的話，嘗試取出 error.response.data.message
+      errorMessage = error.response.data.message || `API 錯誤 (狀態碼: ${error.response.status})`;
+      } else if (error.request) {
+      // 請求已發出但沒有收到回應 (例如：網路中斷)
+      errorMessage = '網路錯誤或伺服器無回應';
+      } else {
+      // 發生了在設定請求時觸發的錯誤
+      errorMessage = error.message;
+      }
+    
+      Toast.fire({
+              icon: "error",
+              title: titleMsg,
+              text: errorMessage
+          });
+      throw error;
+  }
+  
   // 98.確認視窗
-  async function showConfirmWindows(title, text, confirmText = "確認", icon = "info"){
+  const showConfirmWindows = async (title, text, confirmText = "確認", icon = "info") => {
     // 因為Swal.fire()是非同步，因此必須使用async
 
     const confirmWindow = await Swal.fire({
@@ -229,7 +228,7 @@ function App() {
     return confirmWindow.isConfirmed;
   };
 
-  // 99. 確認狀態是否改變
+  // 99. 確認狀態是否改變 (登入狀態)
   useEffect(() => {
     console.log(`偵測到 isAuth 變動，最新的值是: ${isAuth}`);
   }, [isAuth]); // 陣列裡放想監聽的變數
@@ -299,19 +298,35 @@ function App() {
           {/* =================================
           產品列表區
           ================================= */}
-          <div className="row mt-5">
-            <div className="col-12">
-                {/* 確認是否登入按鈕 */}
+          
+          <div className='d-flex justify-content-end align-items-center mt-5'>
+            {/* 驗證結果回傳前出現轉圈圈 spinner */}
+            {isCheckLoading && (
+              <div className="d-flex align-items-center me-3 text-white">
+                <div className="spinner-border spinner-border-sm me-2" role="status">
+                  <span className="visually-hidden">
+                    Loading...
+                  </span>
+                </div>
+                <span className='fs-6'>驗證中，請稍後...</span>
+              </div>
+            )}           
+            {/* 確認是否登入按鈕 */}
                 <button
-                className="btn btn-success mb-3"
-                type="button"
-                onClick={checkLogin}
-              >確認是否登入</button>
+                  className="btn btn-success px-4  "
+                  type="button"
+                  onClick={checkLogin}
+                >確認是否登入</button>
+          </div>
+
+          {/* 產品列表表格區 */}
+          <div className="row">
+            <div className="col-12">
               <h2 className="mb-3 double-text">產品列表</h2>
               <table className="table table-striped table-hover">
                 <thead className='table-success'>
                   <tr>
-                    <th scope="col" className='fs-5'>產品名稱</th>
+                    <th scope="col" className='fs-5 '>📌商品名稱</th>
                     <th scope="col" className='fs-5'>類別</th>
                     <th scope="col" className='fs-5'>原價</th>
                     <th scope="col" className='fs-5'>售價</th>
@@ -322,7 +337,7 @@ function App() {
                 <tbody>
                   {products.map((product) => (
                     <tr key={product.id}>
-                      <td className='fs-5'>{product.title}</td>
+                      <td className='fs-5 fw-bold'>{product.title}</td>
                       <td className='fs-5'>{product.category}</td>
                       <td className='fs-5'>{product.origin_price} 元</td>
                       <td className='fs-5 text-center'>{product.price} 元 / {product.unit}</td>
@@ -351,44 +366,59 @@ function App() {
           /* ================================= */}
 
           {tempProduct && (
+            // 灰色遮罩區，點擊等同於關閉彈跳視窗
             <div 
               className="modal-backdrop"
               onClick = {closeModal}
             >
-              {/* 建立停止傳播，阻止事件向富元素傳遞(冒泡) */}
+              {/* 彈跳視窗區塊 */}
               <div 
-                className="modal-content"
-                onClick = {(e) => e.stopPropagation()}
+                className="modal-content p-5"
+                onClick = {(e) => e.stopPropagation()} 
               >
-                <h2 className='fw-bold text-success double-text '>單一產品細節</h2>
+                {/* 建立停止傳播，阻止事件向富元素傳遞(冒泡) */}
+                <h2 className='fw-bold text-dark double-text mb-3'>商品詳細資訊</h2>
                 {tempProduct ? (
                   /** 有選到有 key id 的產品*/
-                  <div className="card mb-3">
-                    <img
-                      src={tempProduct.imageUrl}
-                      className="card-img-top primary-image m-3"
-                      alt={`${tempProduct.title}的主圖`}
-                    />
-                    <div className="card-body">
-                      <h5 className="card-title  fw-bold fs-2 text-center">
-                        {tempProduct.title}
-                        <span className="badge bg-primary ms-2 fs-6 ">
-                          {tempProduct.category}
-                        </span>
-                      </h5>
-                      <p className="card-text fs-5">商品描述：{tempProduct.description}</p>
-                      <p className="card-text fs-5">商品內容：{tempProduct.content}</p>
-                      <div className="d-flex">
-                        <p className="card-text fs-5">
-                          商品價格：
-                          <del className='text-secondary'>{tempProduct.origin_price} 元 </del>/
-                          <span className=" text-primary fw-bold">
-                            {"  "}
-                            {tempProduct.price} 元{" "}
+                  <div className="card mb-3 ">
+                    <div className="d-flex justify-content-start p-4 gap-5">
+                      <img
+                        src={tempProduct.imageUrl}
+                        className="card-img-top"
+                        alt={`${tempProduct.title}的主圖`}
+                      />
+                      <div className="d-flex  flex-column justify-content-start ">
+                        {/* 商品名稱、類別 */}
+                        <h5 className="card-title  fw-bold fs-2  ">
+                          {tempProduct.title}
+                          <span className="badge bg-primary ms-3 fs-6 ">
+                            {tempProduct.category}
                           </span>
-                        </p>
+                        </h5>
+
+                        <div className="d-flex">
+                          <p className="card-text fs-5">
+                            售價：
+                            <del className='text-secondary'>{tempProduct.origin_price} 元 </del>
+                            ↘️ 現在只要
+                            <span className=" text-primary fw-bold">
+                              {"  "}
+                              {tempProduct.price} 元 / {tempProduct.unit}{" "}
+                            </span>
+                          </p>
+                        </div>
                       </div>
-                      <h5 className="mt-3 mb-3 fw-bold">更多圖片：</h5>
+                    </div>
+                    
+                    <div className="card-body">
+                      {/* 商品細節區塊 */}
+                      <p className="card-text fs-5">📌 商品描述</p>
+                      <p  className="card-text fs-5 card-describe">{tempProduct.description}</p>
+                      <p className="card-text fs-5">🍳 商品內容</p>
+                      <p  className="card-text fs-5  card-describe">{tempProduct.content}</p>
+                      
+                      { /** 更多圖片區域 */}
+                      <h5 className="mt-3 mb-3 fw-bold">更多圖片🔍</h5>
                       <div className="d-flex flex-wrap gap-4 justify-content-center">
                         {tempProduct.imagesUrl.map((url, index) => (
                           <img
@@ -397,7 +427,7 @@ function App() {
                             src={url}
                           />
                         ))}
-                      </div> { /** 更多圖片區域 */}
+                      </div> 
 
                       <button 
                         type='button'

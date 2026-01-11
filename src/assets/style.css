@@ -8,12 +8,14 @@ body {
 
 .double-text{
   font-size: 36px;
-  -webkit-text-stroke: 2px rgb(255, 247, 0); /* 描邊色和寬度 */
-  text-stroke: 2px rgb(210, 214, 66);
+  -webkit-text-stroke: 1.5px rgb(255, 247, 0); /* 描邊色和寬度 */
+  text-stroke: 1.5px rgb(210, 214, 66);
   paint-order: stroke fill; /* 先畫外框，再填滿 */
 }
 
-
+.align-items-center{
+  align-items: center;
+}
 
 /* ==== 登入頁面 ==== */
 
@@ -46,8 +48,9 @@ img {
   max-width: 100%;
 }
 
-.primary-image {
-  height: 250px;
+.card-img-top {
+  width: auto;
+  height: 200px;
 }
 
 .images {
@@ -88,7 +91,7 @@ img {
 
 .card-title {
   display: flex;
-  justify-content: center;
+  justify-content: start;
   align-items: center;
 }
 
@@ -109,4 +112,8 @@ img {
 .card-body,
 .card {
   background-color: rgb(185, 186, 187);
+}
+
+.card-describe{
+  margin-left: 1em;
 }
