@@ -17,6 +17,23 @@ body {
   align-items: center;
 }
 
+.half-item{
+  flex-grow: 1; 
+  flex-shrink: 1; 
+  flex-basis: 0%; 
+}
+
+
+.mobile-disable{
+  display: none;
+}
+
+@media (min-width: 768px){
+  .mobile-disable{
+    display: inline;
+  }
+}
+
 /* ==== 登入頁面 ==== */
 
 .login {
@@ -41,20 +58,60 @@ body {
   margin: auto;
 }
 
+/* 產品列表 */
+
+.container{
+  max-width: calc(100% - 16px - 16px);
+  align-self: center;
+  margin: 0 auto;
+}
+tr.table-text th,
+tr.table-text td,
+tr.table-text button{
+  font-size: 0.7rem;
+}
+
+
+.title-text{
+  font-size: 1rem ;
+}
+
+tbody tr td {
+
+  }
+
+
+@media (min-width: 768px) {
+
+  .container{
+    max-width: calc(100% - 80px - 80px);
+  }
+  tr.table-text th,
+  tr.table-text td,
+  tr.table-text button{
+    font-size: 1.0rem;
+  }
+
+  .title-text{
+    font-size: 2.0rem ;
+  }
+}
+
 /* ====  產品頁面 ==== */
 
 img {
   object-fit: contain;
   max-width: 100%;
+  max-height: 250px;
 }
 
-.card-img-top {
-  width: auto;
-  height: 200px;
-}
+
 
 .images {
-  height: 200px;
+  width: 100%;
+  max-width: 250px;
+  max-height: 200px;
+  object-fit: cover;
 }
 
 /* === 灰色遮罩：佔滿全螢幕，半透明 === */
@@ -81,12 +138,42 @@ img {
   
   /* 限制寬度與邊距 */
   width: 100%; 
-  max-width: calc(100% - 120px - 120px); /*  控制最大寬度 */
+  max-width: calc(100% - 16px - 16px); /*  控制最大寬度 */
   margin: 0 24px;   /* 左右保留 24px 的編劇 */
   
   /* 讓視窗內若內容太長可以滾動，而不影響整頁 */
   max-height: 90vh; 
   overflow-y: auto;
+}
+
+/* 副標題文字 */
+.sub-title-text{
+  font-size: 1.0rem;
+}
+
+/* 內容文字 */
+.content-text{
+  font-size: 0.7rem;
+}
+
+@media (min-width: 768px){
+  .modal-content {
+    max-width: calc(100% - 120px - 120px); /*  控制最大寬度 */
+  }
+
+  .sub-title-text{
+    font-size: 1.6rem;
+  }
+
+  .content-text{
+    font-size: 1.2rem;
+  }
+
+}
+
+.card-img-top {
+  width: auto;
+  height: auto;
 }
 
 .card-title {

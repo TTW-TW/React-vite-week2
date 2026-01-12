@@ -82,6 +82,9 @@ function App() {
       Toast.fire({
               icon: "success",
               title: '登入成功',
+              position: 'bottom-end', // 'bottom-right', 'bottom-left', (預設) 'top-end', 'top-left' 
+              showConfirmButton: false, // 不需要確認按鈕
+              timer: 2000 // 3秒後自動消失
           });
 
 
@@ -293,13 +296,13 @@ function App() {
         // 【已登入】 (也就是 (!isAuth) = False )
         //  =================================
 
-        <div className="container fs-4 text-white"> 
+        <div className="container"> 
 
           {/* =================================
           產品列表區
           ================================= */}
           
-          <div className='d-flex justify-content-end align-items-center mt-5'>
+          <div className='d-flex justify-content-end align-items-center mt-5 '>
             {/* 驗證結果回傳前出現轉圈圈 spinner */}
             {isCheckLoading && (
               <div className="d-flex align-items-center me-3 text-white">
@@ -313,7 +316,7 @@ function App() {
             )}           
             {/* 確認是否登入按鈕 */}
                 <button
-                  className="btn btn-success px-4  "
+                  className="btn btn-success px-2 px-md-4 mb-2 sub-title-text"
                   type="button"
                   onClick={checkLogin}
                 >確認是否登入</button>
@@ -322,27 +325,27 @@ function App() {
           {/* 產品列表表格區 */}
           <div className="row">
             <div className="col-12">
-              <h2 className="mb-3 double-text">產品列表</h2>
-              <table className="table table-striped table-hover">
+              <h2 className="mb-3 double-text fw-bold text-dark title-text">產品列表</h2>
+              <table className="table table-striped table-hover  ">
                 <thead className='table-success'>
-                  <tr>
-                    <th scope="col" className='fs-5 '>📌商品名稱</th>
-                    <th scope="col" className='fs-5'>類別</th>
-                    <th scope="col" className='fs-5'>原價</th>
-                    <th scope="col" className='fs-5'>售價</th>
-                    <th scope="col" className='fs-5'>是否啟用</th>
-                    <th scope="col" className='fs-5'>查看細節</th>
+                  <tr className='table-text'>
+                    <th scope="col" className='align-middle'>商品名稱</th>
+                    <th scope="col" className='align-middle'>類別</th>
+                    <th scope="col" className='align-middle'>原價</th>
+                    <th scope="col" className='align-middle'>售價</th>
+                    <th scope="col" className='align-middlealign-middle'>是否啟用</th>
+                    <th scope="col" className=''>查看細節</th>
                   </tr>
                 </thead>
                 <tbody>
                   {products.map((product) => (
-                    <tr key={product.id}>
-                      <td className='fs-5 fw-bold'>{product.title}</td>
-                      <td className='fs-5'>{product.category}</td>
-                      <td className='fs-5'>{product.origin_price} 元</td>
-                      <td className='fs-5 text-center'>{product.price} 元 / {product.unit}</td>
-                      <td className='fs-5 '>{product.is_enabled ? "已啟用" : "未啟用"}</td>
-                      <td  className='fs-5'>
+                    <tr key={product.id} className='table-text'>
+                      <td className='align-middle fw-bold'>{product.title}</td>
+                      <td className='align-middle' fs-sm-6>{product.category}</td>
+                      <td className='align-middle' fs-sm-6>{product.origin_price} 元</td>
+                      <td className='align-middle'>{product.price} 元 / {product.unit}</td>
+                      <td className='align-middle'>{product.is_enabled ? "已啟用" : "未啟用"}</td>
+                      <td  className='align-middle'>
                       {/* 查看詳細資訊按鈕 */}
                         <button
                           className="btn btn-primary"
@@ -350,7 +353,9 @@ function App() {
                             setTempProduct(product)
                           } /** 在這個產品點擊按鈕後會選擇此產品*/
                         >
-                          查看細節
+                          <span className='mobile-disable'>查看細節</span>
+                          <span >🔍</span>
+                          
                         </button>
                       </td>
                     </tr>
@@ -373,35 +378,39 @@ function App() {
             >
               {/* 彈跳視窗區塊 */}
               <div 
-                className="modal-content p-5"
+                className="modal-content p-3 p-lg-5 "
                 onClick = {(e) => e.stopPropagation()} 
               >
                 {/* 建立停止傳播，阻止事件向富元素傳遞(冒泡) */}
-                <h2 className='fw-bold text-dark double-text mb-3'>商品詳細資訊</h2>
+                <h2 className='fw-bold text-dark double-text mb-3 title-text'>商品詳細資訊</h2>
                 {tempProduct ? (
                   /** 有選到有 key id 的產品*/
                   <div className="card mb-3 ">
-                    <div className="d-flex justify-content-start p-4 gap-5">
-                      <img
-                        src={tempProduct.imageUrl}
-                        className="card-img-top"
-                        alt={`${tempProduct.title}的主圖`}
-                      />
-                      <div className="d-flex  flex-column justify-content-start ">
-                        {/* 商品名稱、類別 */}
-                        <h5 className="card-title  fw-bold fs-2  ">
+                    {/* 上半部區塊 */}
+                    <div className="d-flex justify-content-start align-itmes-top  p-2 p-md-4 gap-3">
+                      {/* 商品主圖 */}
+                      <div className="half-item ">
+                        <img
+                          src={tempProduct.imageUrl}
+                          className="card-img-top " 
+                          alt={`${tempProduct.title}的主圖`}
+                        />
+                      </div>
+                      {/* 商品名稱、類別 */}
+                      <div className="d-flex  flex-column justify-content-start half-item">
+                        <h5 className="card-title  fw-bold sub-title-text  ">
                           {tempProduct.title}
-                          <span className="badge bg-primary ms-3 fs-6 ">
+                          <span className="badge bg-primary ms-3  content-text">
                             {tempProduct.category}
                           </span>
                         </h5>
-
+                        {/* 售價 */}
                         <div className="d-flex">
-                          <p className="card-text fs-5">
-                            售價：
-                            <del className='text-secondary'>{tempProduct.origin_price} 元 </del>
-                            ↘️ 現在只要
-                            <span className=" text-primary fw-bold">
+                          <p className="card-text  content-text">
+                            <span className="content-text">售價：</span>
+                            <del className='text-secondary content-text'>{tempProduct.origin_price} 元 </del>
+                            <span className="content-text"> ↘️ 現在只要</span>
+                            <span className=" text-primary fw-bold content-text">
                               {"  "}
                               {tempProduct.price} 元 / {tempProduct.unit}{" "}
                             </span>
@@ -410,17 +419,21 @@ function App() {
                       </div>
                     </div>
                     
-                    <div className="card-body">
-                      {/* 商品細節區塊 */}
-                      <p className="card-text fs-5">📌 商品描述</p>
-                      <p  className="card-text fs-5 card-describe">{tempProduct.description}</p>
-                      <p className="card-text fs-5">🍳 商品內容</p>
-                      <p  className="card-text fs-5  card-describe">{tempProduct.content}</p>
+                    <div className="card-body " >
+                      {/* 中間-商品細節區塊 */}
+                      <p className="card-text  content-text">📌 商品描述</p>
+                      <p  className="card-text  card-describe content-text">{tempProduct.description}</p>
+                      <p className="card-text  content-text">🍳 商品內容</p>
+                      <p  className="card-text   card-describe content-text">{tempProduct.content}</p>
                       
                       { /** 更多圖片區域 */}
-                      <h5 className="mt-3 mb-3 fw-bold">更多圖片🔍</h5>
-                      <div className="d-flex flex-wrap gap-4 justify-content-center">
-                        {tempProduct.imagesUrl.map((url, index) => (
+                      <h5 className="mt-4 mb-4 fw-bold sub-title-text">更多圖片➕</h5>
+                      <div className="d-flex flex-wrap gap-3 gap-md-4 justify-content-center">
+                        {tempProduct.imagesUrl
+                        // 當 url 不為空字串的時候才可以進到下一關
+                        .filter((url) => url)
+                        // 只將圖片 URL 不為空的陣列拿去跑 MAP
+                        .map((url, index) => (
                           <img
                             key={index}
                             className='images'
@@ -431,7 +444,7 @@ function App() {
 
                       <button 
                         type='button'
-                        className="btn btn-secondary mt-5 px-5 py-2"
+                        className="btn btn-secondary mt-5  py-2 px-5 align-self-center "
                         onClick={closeModal}
                       >
                         關閉
